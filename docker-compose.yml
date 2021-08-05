@@ -1,0 +1,73 @@
+version: '3.9'
+services:
+    # API
+    api:
+        container_name: api
+        hostname: api
+        build:
+            context: ./api
+            dockerfile: Dockerfile
+        image: api:0.1
+        ports:
+            - ${API_PORT}:6099 #HTTP
+        volumes:
+            - ./api:/home/app
+            - /home/app/node_modules
+        working_dir: /home/app
+        command: tail -F anything
+        # command: npm run start
+        depends_on:
+            - mongo
+
+     # Serverless
+    #  serverless:
+    #     container_name: serverless
+    #     build:
+    #         context: ./serverless
+    #         dockerfile: Dockerfile
+    #     image: serverless:0.1
+    #     ports:
+    #         - ${SERVERLESS_PORT}:6099
+    #     volumes:
+    #         - ./serverless:/home/app
+    #         - ./api/src:/home/app/src
+    #     command: tail -F anything
+    
+    # AWS
+    # aws-cli:
+    #     container_name: aws-cli
+    #     image: amazon/aws-cli:2.2.26
+    #     volumes:
+    #         - .aws:/root/.aws
+
+    # Mongo
+    mongo:
+        hostname: ${MONGO_HOST}
+        container_name: mongo
+        image: mongo:4.4.7
+        ports:
+            - ${MONGO_PORT}:27017
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+            MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+            MONGO_INITDB_DATABASE: ${MONGO_DBNAME}
+        volumes:
+            - ./mongo/db:/data/db
+
+    # # Mongo Admin
+    mongo-admin:
+        container_name: mongo-admin
+        image: mrvautin/adminmongo
+        ports:
+            - ${MONGO_ADMIN_PORT}:3000
+        environment:
+            CONN_NAME: "Mongo"
+            HOST: "0.0.0.0"
+            PORT: "3000"
+            DB_USERNAME: ${MONGO_USER}
+            DB_PASSWORD: ${MONGO_PASSWORD}
+            DB_HOST: ${MONGO_HOST}
+            DB_PORT: ${MONGO_PORT}
+            DB_NAME: ${MONGO_DBNAME}
+        depends_on:
+            - ${MONGO_HOST}
