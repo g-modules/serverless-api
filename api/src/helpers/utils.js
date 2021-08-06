@@ -18,10 +18,10 @@ const answer = {
 		logger.error( `Catch ${error.name}: ${error.message}` );
 		return {
 			statusCode,
-			"body": JSON.stringify({
+			"body": {
 				"success": false,
 				"error": error.message
-			})
+			}
 		};
 	}
 };
