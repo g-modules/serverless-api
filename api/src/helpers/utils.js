@@ -5,6 +5,19 @@ const logger = {
 	"error": message => console.error( "\x1b[31m%s\x1b[0m", "ERROR:", message ) // eslint-disable-line no-console
 };
 
+// todo: request checks
+const requestGuard = ( request ) => {
+	try {
+		const { databaseName, collectionName, documentId } = request.params;
+		const newDocuments = request.body;
+		return [databaseName, collectionName, documentId, newDocuments];
+	} catch ( error ) {
+		logger.error( `requestGuard ${error}` );
+		return false;
+	}
+};
+
+// todo: finish answer
 const answer = {
 	"successful": ( statusCode, message, result ) => ({
 		statusCode,
@@ -14,16 +27,13 @@ const answer = {
 			result
 		}
 	}),
-	"error": ( statusCode, error ) => {
-		logger.error( `Catch ${error.name}: ${error.message}` );
-		return {
-			statusCode,
-			"body": {
-				"success": false,
-				"error": error.message
-			}
-		};
-	}
+	"error": ( statusCode, error ) => ({
+		statusCode,
+		"body": {
+			"success": false,
+			"error": error.message
+		}
+	})
 };
 
-export { logger, answer };
+export { logger, answer, requestGuard };

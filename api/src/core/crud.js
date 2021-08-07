@@ -1,10 +1,12 @@
 import mongodb from "mongodb";
 import { getCollection } from "../helpers/mongo.js";
+import { logger } from "../helpers/utils.js";
 
 const { "ObjectId": objectId } = mongodb;
 
 
-const createDocuments = async ( databaseName, collectionName, newDocuments ) => {
+const createDocuments = async ( databaseName, collectionName, documentId, newDocuments ) => {
+	logger.log( "createDocuments" );
 	try {
 		const collection = await getCollection( databaseName, collectionName );
 		const result = await collection.insertMany( newDocuments );
@@ -16,6 +18,7 @@ const createDocuments = async ( databaseName, collectionName, newDocuments ) => 
 };
 
 const readDocuments = async ( databaseName, collectionName, documentId ) => {
+	logger.log( "readDocuments" );
 	let result;
 	try {
 		const collection = await getCollection( databaseName, collectionName );
@@ -30,6 +33,7 @@ const readDocuments = async ( databaseName, collectionName, documentId ) => {
 };
 
 const updateDocuments = async ( databaseName, collectionName, documentId, documentsUpdate ) => {
+	logger.log( "updateDocuments" );
 	try {
 		const collection = await getCollection( databaseName, collectionName );
 		await collection.findOneAndUpdate({ "_id": objectId( documentId ) }, { "$set": documentsUpdate });
@@ -40,6 +44,7 @@ const updateDocuments = async ( databaseName, collectionName, documentId, docume
 };
 
 const deleteDocuments = async ( databaseName, collectionName, documentId ) => {
+	logger.log( "deleteDocuments" );
 	let result;
 	try {
 		const collection = await getCollection( databaseName, collectionName );
